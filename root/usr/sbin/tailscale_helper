@@ -34,8 +34,8 @@ if [ "$ACCEPT_DNS" = "1" ]; then
 	target_address="/$MagicDNSSuffix/100.100.100.100"
 	index=$(uci show dhcp | grep 'dhcp.@dnsmasq\[[0-9]\+\]=dnsmasq' | grep -o '[0-9]\+')
 	for i in $index; do
-		if ! uci get dhcp.@dnsmasq[$i].address 2>/dev/null | grep -qxF "$target_address"; then
-			uci add_list "dhcp.@dnsmasq[$i].address=$target_address" || revert_exit "Failed to add DNS address."
+		if ! uci get dhcp.@dnsmasq[$i].address 2>/dev/null | grep -qwF "$target_address"; then
+			uci add_list dhcp.@dnsmasq[$i].address="$target_address" || revert_exit "Failed to add DNS address."
 		fi
 	done
 fi
