@@ -1,0 +1,54 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - v*
+
+env:
+  PACKAGE_NAME: luci-app-tailscale
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup OpenWrt SDK
+      uses: openwrt/gh-action-sdk@v5
+      with:
+        version: snapshot
+        target: x86
+        subtarget: 64
+
+    - name: Build Package
+      run: |
+        set -eux
+        cd openwrt
+
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+
+        mkdir -p package/custom
+        ln -s "$GITHUB_WORKSPACE" package/custom/${PACKAGE_NAME}
+
+        echo "CONFIG_USE_APK=y" >> .config
+        make defconfig
+
+        make package/${PACKAGE_NAME}/compile V=s
+        
+    - name: Prepare release artifacts
+      run: |
+        set -eux
+        mkdir -p dist
+        find openwrt/bin/packages -name "*.apk" -exec cp -v {} dist/ \;
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: dist/*.apk
+        generate_release_notes: true
