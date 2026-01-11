@@ -22,6 +22,7 @@ jobs:
       uses: openwrt/gh-action-sdk@v5
       env:
         ARCH: x86_64
+        NO_DEFAULT_FEEDS: 1
 
     - name: Build Package
       run: |
