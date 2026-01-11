@@ -20,10 +20,8 @@ jobs:
 
     - name: Setup OpenWrt SDK
       uses: openwrt/gh-action-sdk@v5
-      with:
-        version: snapshot
-        target: x86
-        subtarget: 64
+      env:
+        ARCH: x86_64
 
     - name: Build Package
       run: |
