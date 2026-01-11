@@ -28,9 +28,6 @@ jobs:
         set -eux
         cd openwrt
 
-        ./scripts/feeds update -a
-        ./scripts/feeds install -a
-
         mkdir -p package/custom
         ln -s "$GITHUB_WORKSPACE" package/custom/${PACKAGE_NAME}
 
@@ -38,15 +35,9 @@ jobs:
         make defconfig
 
         make package/${PACKAGE_NAME}/compile V=s
-        
-    - name: Prepare release artifacts
-      run: |
-        set -eux
-        mkdir -p dist
-        find openwrt/bin/packages -name "*.apk" -exec cp -v {} dist/ \;
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        files: dist/*.apk
+        files: openwrt/bin/packages/*.apk
         generate_release_notes: true
