@@ -26,15 +26,16 @@ jobs:
       env:
         ARCH: ${{ matrix.arch }}
         PACKAGES: luci-app-tailscale
+        V: s
 
     # - name: Create GitHub Release
     #   uses: softprops/action-gh-release@v2
     #   with:
-    #     files: bin/packages/packages/${{ matrix.arch }}/*.apk bin/packages/${{ matrix.arch }}/packages/*.ipk
+    #     files: bin/packages/**/packages/*.[ai]pk
     #     generate_release_notes: true
 
     - name: Store packages
       uses: actions/upload-artifact@v6
       with:
         name: ${{ matrix.arch}}-packages
-        path: bin/packages/${{ matrix.arch }}/packages/*.apk bin/packages/${{ matrix.arch }}/packages/*.ipk
+        path: bin/packages/**/packages/*.[ai]pk
