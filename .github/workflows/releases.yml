@@ -9,6 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+          - x86_64
 
     steps:
     - name: Checkout source
@@ -20,17 +24,17 @@ jobs:
     - name: Build
       uses: openwrt/gh-action-sdk@v10
       env:
-        ARCH: x86_64
+        ARCH: ${{ matrix.arch }}
         PACKAGES: luci-app-tailscale
 
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
-      with:
-        files: bin/packages/packages/*.apk
-        generate_release_notes: true
-
-    # - name: Store packages
-    #   uses: actions/upload-artifact@v2
+    # - name: Create GitHub Release
+    #   uses: softprops/action-gh-release@v2
     #   with:
-    #     name: packages
-    #     path: bin/packages/packages/*.apk
+    #     files: bin/packages/packages/${{ matrix.arch }}/*.apk bin/packages/${{ matrix.arch }}/packages/*.ipk
+    #     generate_release_notes: true
+
+    - name: Store packages
+      uses: actions/upload-artifact@v6
+      with:
+        name: ${{ matrix.arch}}-packages
+        path: bin/packages/${{ matrix.arch }}/packages/*.apk bin/packages/${{ matrix.arch }}/packages/*.ipk
